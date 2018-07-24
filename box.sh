@@ -2,13 +2,22 @@
 
 set -eu
 
+if echo "$PACKER_BUILD_NAME" | grep -q 'amd64'; then
+  ostype='Debian_64'
+elif echo "$PACKER_BUILD_NAME" | grep -q 'i386'; then
+  ostype='Debian'
+else
+  >&2 echo "Virtualbox only works with amd64 or i386 guests"
+  exit 1
+fi
+
 tmp="$(mktemp -d box.XXX)"
 
 ova="builds/$PACKER_BUILD_NAME.ova"
 vmdk="builds/$PACKER_BUILD_NAME.vmdk"
 
 vboxmanage createvm --name "$PACKER_BUILD_NAME" \
-                    --ostype Debian_64 \
+                    --ostype "$ostype" \
                     --register
 
 vboxmanage modifyvm "$PACKER_BUILD_NAME" --boot1 disk \
@@ -52,7 +61,7 @@ Vagrant.configure("2") do |config|
 end
 FILE
 
-if echo "$PACKER_BUILD_NAME" | grep -q box-iso; then
+if echo "$PACKER_BUILD_NAME" | grep -q 'box-iso'; then
 cat >> "$tmp/Vagrantfile" << FILE
 # The contents below (if any) are custom contents provided by the
 # Packer template during image build.
