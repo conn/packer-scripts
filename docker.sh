@@ -4,7 +4,7 @@ set -eu
 
 read -r name arch version time < <(
   echo "$PACKER_BUILD_NAME" |
-  sed -rn 's/(.+)-(.+)-docker-([0-9\.]+)-([1-9]+)/\1 \2 \3/p'
+  sed -rn 's/(.+)-(.+)-docker-([0-9\.]+)-([0-9]+)/\1 \2 \3 \4/p'
 )
 
 image="conn/$name-$arch:$version-$time"
