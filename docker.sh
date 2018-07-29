@@ -9,4 +9,8 @@ read -r name arch version time < <(
 
 image="conn/$name-$arch:$version-$time"
 
+if [ "$arch" == "amd64" ]; then
+  docker tag "$image" "conn/$name:$version-$time"
+fi
+
 docker save "$image" | xz -zc - > builds/"$PACKER_BUILD_NAME".tar.xz
